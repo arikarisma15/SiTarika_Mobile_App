@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, TouchableWithoutFeedback, Modal, Alert, ImageBackground, TextInput, Button } from 'react-native';
-import { Notification, SearchNormal, Receipt21, Clock, Message, ArrowRight2, } from 'iconsax-react-native';
+import React, {useState} from 'react';
+import {ScrollView, ImageBackground, Modal, TouchableWithoutFeedback, StyleSheet, TextInput, Text, View, FlatList, TouchableOpacity, Image} from 'react-native';
+import {Element3, Receipt21, Clock, Notification, SearchNormal, ArrowRight2} from 'iconsax-react-native';
+import {BlogList, CategoryList} from './data';
 import { fontType, colors } from './src/assets/theme';
+import { ListHorizontal, ItemSmall } from './src/components';
 
 const HomeScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -301,6 +303,7 @@ const InfoTari = () => {
         <Text style={styles.textSeni}>Informasi Tarian Daerah</Text>
         <ArrowRight2 color={colors.black()} variant="Linear" size={20} />
       </View>
+      <FlatListCategory />
       <View style={infoTari.listCard}>
         <View style={infoTari.cardItem}>
           <Image
@@ -729,5 +732,41 @@ const category = StyleSheet.create({
     color: colors.grey(),
   },
 })
+
+
+const ItemCategory = ({item, onPress, color}) => {
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <View style={category.item}>
+        <Text style={{...category.title, color}}>{item.categoryName}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const FlatListCategory = () => {
+  const [selected, setSelected] = useState(1);
+  const renderItem = ({item}) => {
+    const color = item.id === selected ? colors.blue() : colors.grey();
+    return (
+      <ItemCategory
+        item={item}
+        onPress={() => setSelected(item.id)}
+        color={color}
+      />
+    );
+  };
+  return (
+    <FlatList
+      data={CategoryList}
+      keyExtractor={item => item.id}
+      renderItem={item => renderItem({...item})}
+      ItemSeparatorComponent={() => <View style={{width: 10}} />}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+    />
+  );
+};
+
 
 export default HomeScreen;
