@@ -1,4 +1,5 @@
 import Home from "./Home";
 import Profile from "./Profile";
-import Profile from "./Detail";
-export {Home, Detail, Profile}
+import Berita from "./Berita";
+import BeritaDetail from "./BeritaDetail";
+export {Home, Berita, Profile, BeritaDetail}

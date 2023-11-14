@@ -17,6 +17,33 @@ export const CategoryList = [
   },
 
 ];
+export const newsData = [
+  {
+    title: 'Joe Biden Tersenyum Turun dari Pesawat Disambut Tari Pendet',
+    description: 'Instagram Live G20 Indonesia menayangkan kedatangan Joe Biden di Bali. Tarian khas Bali langsung menyambutnya yang turun dari pesawat dan berjalan menuju mobil. Ia tampak tersenyum.(Senin, 30 Agu 2022 16:54 ~ infoBali). ',
+    imageUrl: 'https://i.pinimg.com/originals/42/73/11/427311dc24f2297f8d8df36cc5c6cf95.jpg',
+    category: 'Tarian',
+    uploadBy: 'Admin SiTarika',
+    createdAt: '10 Oktober 2023'
+  },
+  {
+    title: 'Wisatawan Kepincut Sendratari Meras Gandrung Banyuwangi',
+    description: 'Ini pertama kalinya saya berkunjung ke Banyuwangi. Sangat menarik pentas seni ini, bercerita tentang bagaimana menjadi seorang Gandrung. Dan lokasi pertunjukannya juga sangat keren," kata Ari saat melihat Meras Gandrung pada Rabu (22/3/2023)',
+    imageUrl: 'https://i.pinimg.com/originals/92/bd/b3/92bdb36d69ac2d460a7a8b1a5b392c9f.jpg',
+    category: 'Tarian',
+    uploadBy: 'Admin SiTarika',
+    createdAt: '10 Oktober 2023'
+  },
+  {
+    title: 'Tarian Jawa Tengah Bikin Kagum',
+    description: 'Tari Gambyong adalah salah satu tarian tradisional Jawa yang kaya akan sejarah dan budaya Indonesia. Tarian ini sering kali dipentaskan dalam berbagai upacara adat, seperti pernikahan, upacara adat, atau acara budaya, dan memiliki makna mendalam di balik gerakan-gerakan yang dilakukan.Tarian ini sudah ada sejak zaman dahulu dan mulai ditampilkan di lingkungan Istana Mangkunegaran pada era 1916-1944 yang sangat terkenal padan jaman itu. (Senin, 22 Agu 2022 16:54 ~ detikJateng)',
+    imageUrl: 'https://i.pinimg.com/564x/c7/a4/f4/c7a4f4c6451828baa66311f7f1ea4487.jpg',
+    category: 'Tarian',
+    uploadBy: 'Admin SiTarika',
+    createdAt: '10 Oktober 2023'
+  },
+  
+];
 export const BlogList = [
   {
     id: 1,
