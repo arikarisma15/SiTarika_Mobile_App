@@ -86,7 +86,7 @@ const BeritaDetail = ({ route }) => {
         <View style={styles.profileContainer}>
           <FastImage
             source={{
-              uri: 'https://i.pinimg.com/originals/2d/2c/06/2d2c06aacc7543bbeecf4e6f136f3b29.jpg',
+              uri: 'https://i.pinimg.com/564x/54/8a/65/548a659c2b06a877516d3c998f5b0939.jpg',
               headers: { Authorization: 'someAuthToken' },
               priority: FastImage.priority.high,
             }}
@@ -94,7 +94,7 @@ const BeritaDetail = ({ route }) => {
           />
           <View style={{ marginLeft: 10 }}>
             <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 14 }}>{selectedBlog.uploadBy}</Text>
-            <Text style={{ color: 'black', fontWeight: '300', fontSize: 12}}>{selectedBlog.createdAt}</Text>
+            <Text style={{ color: 'black', fontWeight: '300', fontSize: 12 }}>{selectedBlog.createdAt}</Text>
           </View>
         </View>
         <View

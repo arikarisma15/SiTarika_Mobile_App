@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { newsData } from '../../../data';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 const navigation = useNavigation();
 
 const NewsComponent = ({ id, title, description, imageUrl }) => {
   return (
-    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('BeritaDetail', {blogId: id})}>
+    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('BeritaDetail', { blogId: id })}>
       <Image
         source={{ uri: imageUrl }}
         style={styles.image}
