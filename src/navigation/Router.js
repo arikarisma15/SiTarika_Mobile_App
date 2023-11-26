@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home, Discover, Bookmark, Profile, BlogDetail, BeritaDetail, Berita } from '../screens';
+import { Home, Discover, Bookmark, Profile, BlogDetail, BeritaDetail, Berita, AddBeritaForm } from '../screens';
 import { Home2, LocationDiscover, Receipt21, ProfileCircle } from 'iconsax-react-native';
 
 const Tab = createBottomTabNavigator();
@@ -21,7 +21,7 @@ function MainApp() {
         tabBarLabelStyle: {
           marginTop: 5,
           fontSize: 10,
-  
+
         },
       }}>
       <Tab.Screen
@@ -83,6 +83,18 @@ const Router = () => {
       <Stack.Screen
         name="BeritaDetail"
         component={BeritaDetail}
+        options={{
+          headerShown: false,
+          animationEnabled: true,
+          animationTypeForReplace: 'pop',
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="AddBerita"
+        component={AddBeritaForm}
         options={{
           headerShown: false,
           animationEnabled: true,

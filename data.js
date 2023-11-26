@@ -32,15 +32,15 @@ export const newsData = [
     imageUrl: 'https://i.pinimg.com/originals/92/bd/b3/92bdb36d69ac2d460a7a8b1a5b392c9f.jpg',
     category: 'Tarian',
     uploadBy: 'Admin SiTarika',
-    createdAt: '16 November 2023'
+   createdAt: '16 November 2023'
   },
-  {
-    title: 'Tarian Jawa Tengah Bikin Kagum',
-    description: 'Tari Gambyong adalah salah satu tarian tradisional Jawa yang kaya akan sejarah dan budaya Indonesia. Tarian ini sering kali dipentaskan dalam berbagai upacara adat, seperti pernikahan, upacara adat, atau acara budaya, dan memiliki makna mendalam di balik gerakan-gerakan yang dilakukan.Tarian ini sudah ada sejak zaman dahulu dan mulai ditampilkan di lingkungan Istana Mangkunegaran pada era 1916-1944 yang sangat terkenal padan jaman itu. (Senin, 22 Agu 2022 16:54 ~ detikJateng)',
-    imageUrl: 'https://i.pinimg.com/564x/c7/a4/f4/c7a4f4c6451828baa66311f7f1ea4487.jpg',
-    category: 'Tarian',
-    uploadBy: 'Admin SiTarika',
-    createdAt: '16 November 2023'
-  },
+  // {
+  //   title: 'Tarian Jawa Tengah Bikin Kagum',
+  //   description: 'Tari Gambyong adalah salah satu tarian tradisional Jawa yang kaya akan sejarah dan budaya Indonesia. Tarian ini sering kali dipentaskan dalam berbagai upacara adat, seperti pernikahan, upacara adat, atau acara budaya, dan memiliki makna mendalam di balik gerakan-gerakan yang dilakukan.Tarian ini sudah ada sejak zaman dahulu dan mulai ditampilkan di lingkungan Istana Mangkunegaran pada era 1916-1944 yang sangat terkenal padan jaman itu. (Senin, 22 Agu 2022 16:54 ~ detikJateng)',
+  //   imageUrl: 'https://i.pinimg.com/564x/c7/a4/f4/c7a4f4c6451828baa66311f7f1ea4487.jpg',
+  //   category: 'Tarian',
+  //   uploadBy: 'Admin SiTarika',
+  //   createdAt: '16 November 2023'
+  // },
   
 ];
