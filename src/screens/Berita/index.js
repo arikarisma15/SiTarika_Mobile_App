@@ -1,12 +1,12 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { newsData } from '../../../data';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Setting2, Edit, Add } from "iconsax-react-native";
 import { colors, fontType } from "../../assets/theme";
+import axios from 'axios';
+
 const navigation = useNavigation();
-
-
 const NewsComponent = ({ id, title, description, imageUrl }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('BeritaDetail', { blogId: id })}>
@@ -20,23 +20,59 @@ const NewsComponent = ({ id, title, description, imageUrl }) => {
 };
 
 const NewsScreen = () => {
+  const [loading, setLoading] = useState(true);
+  const [blogData, setBlogData] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const getDataBlog = async () => {
+    try {
+      const response = await axios.get(
+        'https://6567ff2e9927836bd973fa98.mockapi.io/sitarika/Berita',
+      );
+      setBlogData(response.data);
+      setLoading(false)
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      getDataBlog()
+      setRefreshing(false);
+    }, 1500);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      getDataBlog();
+    }, [])
+  );
   return (
-    <View>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+    <View style={{ flex: 1, backgroundColor: 'black', }}>
+      <ScrollView contentContainerStyle={styles.scrollContainer} refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
         <View style={styles.container}>
           <Text style={styles.judul}>^^ BERITA TARI INDONESIA ^^</Text>
           <Text style={styles.time}>Berita Informasi Terkini </Text>
         </View>
 
-        {newsData.map((news, index) => (
-          <NewsComponent
-            key={index}
-            id={news.id}
-            title={news.title}
-            description={news.description}
-            imageUrl={news.imageUrl}
-          />
-        ))}
+        {loading ? (
+          <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+            <ActivityIndicator size={'large'} color={colors.blue()} />
+          </View>
+        ) : (
+          blogData.map((news, index) => (
+            <NewsComponent
+              key={index}
+              id={news.id}
+              title={news.title}
+              description={news.description}
+              imageUrl={news.image}
+            />
+          ))
+        )}
       </ScrollView>
       <TouchableOpacity
         style={styles.floatingButton}
@@ -45,12 +81,7 @@ const NewsScreen = () => {
         <Add color={colors.white()} variant="Linear" size={20} />
       </TouchableOpacity>
     </View>
-
-
   );
-
-
-
 };
 
 const styles = StyleSheet.create({

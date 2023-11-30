@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -13,19 +13,51 @@ import { useNavigation } from "@react-navigation/native";
 import { fontType, colors } from "../../assets/theme";
 import axios from 'axios';
 
-const AddBeritaForm = () => {
+const EditBeritaForm = ({ route }) => {
+    const { blogId } = route.params;
 
-    const [loading, setLoading] = useState(false);
+    const [blogData, setBlogData] = useState({
+        title: "",
+        content: "",
+    });
+    const handleChange = (key, value) => {
+        setBlogData({
+            ...blogData,
+            [key]: value,
+        });
+    };
+    const [image, setImage] = useState(null);
+    const navigation = useNavigation();
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        getBlogById();
+    }, [blogId]);
 
-    const handleUpload = async () => {
+    const getBlogById = async () => {
+        try {
+            const response = await axios.get(
+                `https://6567ff2e9927836bd973fa98.mockapi.io/sitarika/Berita/${blogId}`,
+            );
+            setBlogData({
+                title: response.data.title,
+                content: response.data.description,
+            })
+            setImage(response.data.image)
+            setLoading(false);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    const handleUpdate = async () => {
         setLoading(true);
         try {
-            await axios.post('https://6567ff2e9927836bd973fa98.mockapi.io/sitarika/Berita', {
-                title: blogData.title,
-                image,
-                createdAt: new Date(),
-                description: blogData.content,
-            })
+            await axios
+                .put(`https://6567ff2e9927836bd973fa98.mockapi.io/sitarika/Berita/${blogId}`, {
+                    title: blogData.title,
+                    image,
+                    createdAt: new Date(),
+                    description: blogData.content,
+                })
                 .then(function (response) {
                     console.log(response);
                 })
@@ -38,20 +70,6 @@ const AddBeritaForm = () => {
             console.log(e);
         }
     };
-
-    const [blogData, setBlogData] = useState({
-        title: "",
-        content: "",
-    });
-
-    const handleChange = (key, value) => {
-        setBlogData({
-            ...blogData,
-            [key]: value,
-        });
-    };
-    const [image, setImage] = useState(null);
-    const navigation = useNavigation();
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -103,10 +121,10 @@ const AddBeritaForm = () => {
             <View style={styles.bottomBar}>
                 {loading && (
                     <View style={styles.loadingOverlay}>
-                        <ActivityIndicator size="large" color={colors.blue()} />
+                        <ActivityIndicator size="large" color={'blue'} />
                     </View>
                 )}
-                <TouchableOpacity style={styles.button} onPress={handleUpload}>
+                <TouchableOpacity style={styles.button} onPress={handleUpdate}>
                     <Text style={styles.buttonLabel}>Upload</Text>
                 </TouchableOpacity>
             </View>
@@ -114,7 +132,7 @@ const AddBeritaForm = () => {
     );
 };
 
-export default AddBeritaForm;
+export default EditBeritaForm;
 
 const styles = StyleSheet.create({
     container: {
