@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "735706774940",
+    "project_id": "sitarika-345db",
+    "storage_bucket": "sitarika-345db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:735706774940:android:140795a071aea7f1bf5c59",
+        "android_client_info": {
+          "package_name": "com.sitarika"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCB-V7znS8cMknW7P9vwigy8PNkzXIdMHk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

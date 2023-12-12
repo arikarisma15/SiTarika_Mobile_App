@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { newsData } from '../../../data';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Setting2, Edit, Add } from "iconsax-react-native";
 import { colors, fontType } from "../../assets/theme";
 import axios from 'axios';
+import firestore from '@react-native-firebase/firestore';
 
 const navigation = useNavigation();
 const NewsComponent = ({ id, title, description, imageUrl }) => {
@@ -23,31 +24,66 @@ const NewsScreen = () => {
   const [loading, setLoading] = useState(true);
   const [blogData, setBlogData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const getDataBlog = async () => {
-    try {
-      const response = await axios.get(
-        'https://6567ff2e9927836bd973fa98.mockapi.io/sitarika/Berita',
-      );
-      setBlogData(response.data);
-      setLoading(false)
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const getDataBlog = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       'https://6567ff2e9927836bd973fa98.mockapi.io/sitarika/Berita',
+  //     );
+  //     setBlogData(response.data);
+  //     setLoading(false)
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  // const onRefresh = useCallback(() => {
+  //   setRefreshing(true);
+  //   setTimeout(() => {
+  //     getDataBlog()
+  //     setRefreshing(false);
+  //   }, 1500);
+  // }, []);
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     getDataBlog();
+  //   }, [])
+  // );
+  useEffect(() => {
+    const subscriber = firestore()
+      .collection('berita')
+      .onSnapshot(querySnapshot => {
+        const blogs = [];
+        querySnapshot.forEach(documentSnapshot => {
+          blogs.push({
+            ...documentSnapshot.data(),
+            id: documentSnapshot.id,
+          });
+        });
+        setBlogData(blogs);
+        setLoading(false);
+      });
+    return () => subscriber();
+  }, []);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
-      getDataBlog()
+      firestore()
+        .collection('blog')
+        .onSnapshot(querySnapshot => {
+          const blogs = [];
+          querySnapshot.forEach(documentSnapshot => {
+            blogs.push({
+              ...documentSnapshot.data(),
+              id: documentSnapshot.id,
+            });
+          });
+          setBlogData(blogs);
+        });
       setRefreshing(false);
     }, 1500);
   }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      getDataBlog();
-    }, [])
-  );
   return (
     <View style={{ flex: 1, backgroundColor: 'black', }}>
       <ScrollView contentContainerStyle={styles.scrollContainer} refreshControl={

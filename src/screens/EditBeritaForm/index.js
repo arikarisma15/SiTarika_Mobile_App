@@ -8,10 +8,14 @@ import {
     ScrollView,
     ActivityIndicator
 } from "react-native";
-import { ArrowLeft } from "iconsax-react-native";
+import { ArrowLeft, Add, AddSquare } from "iconsax-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { fontType, colors } from "../../assets/theme";
 import axios from 'axios';
+import ImagePicker from 'react-native-image-crop-picker';
+import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
+import FastImage from "react-native-fast-image";
 
 const EditBeritaForm = ({ route }) => {
     const { blogId } = route.params;
@@ -27,49 +31,117 @@ const EditBeritaForm = ({ route }) => {
         });
     };
     const [image, setImage] = useState(null);
+    const [oldImage, setOldImage] = useState(null);
     const navigation = useNavigation();
     const [loading, setLoading] = useState(true);
     useEffect(() => {
-        getBlogById();
+        const subscriber = firestore()
+            .collection('berita')
+            .doc(blogId)
+            .onSnapshot(documentSnapshot => {
+                const blogData = documentSnapshot.data();
+                if (blogData) {
+                    console.log('Blog data: ', blogData);
+                    setBlogData({
+                        title: blogData.title,
+                        content: blogData.description,
+                    });
+                    setOldImage(blogData.image);
+                    setImage(blogData.image);
+                    setLoading(false);
+                } else {
+                    console.log(`Blog with ID ${blogId} not found.`);
+                }
+            });
+        setLoading(false);
+        return () => subscriber();
     }, [blogId]);
-
-    const getBlogById = async () => {
-        try {
-            const response = await axios.get(
-                `https://6567ff2e9927836bd973fa98.mockapi.io/sitarika/Berita/${blogId}`,
-            );
-            setBlogData({
-                title: response.data.title,
-                content: response.data.description,
+    const handleImagePick = async () => {
+        ImagePicker.openPicker({
+            width: 1920,
+            height: 1080,
+            cropping: true,
+        })
+            .then(image => {
+                console.log(image);
+                setImage(image.path);
             })
-            setImage(response.data.image)
-            setLoading(false);
-        } catch (error) {
-            console.error(error);
-        }
+            .catch(error => {
+                console.log(error);
+            });
     };
+
     const handleUpdate = async () => {
         setLoading(true);
+        let filename = image.substring(image.lastIndexOf('/') + 1);
+        const extension = filename.split('.').pop();
+        const name = filename.split('.').slice(0, -1).join('.');
+        filename = name + Date.now() + '.' + extension;
+        const reference = storage().ref(`beritaimages/${filename}`);
         try {
-            await axios
-                .put(`https://6567ff2e9927836bd973fa98.mockapi.io/sitarika/Berita/${blogId}`, {
-                    title: blogData.title,
-                    image,
-                    createdAt: new Date(),
-                    description: blogData.content,
-                })
-                .then(function (response) {
-                    console.log(response);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+            if (image !== oldImage && oldImage) {
+                const oldImageRef = storage().refFromURL(oldImage);
+                await oldImageRef.delete();
+            }
+            if (image !== oldImage) {
+                await reference.putFile(image);
+            }
+            const url =
+                image !== oldImage ? await reference.getDownloadURL() : oldImage;
+            await firestore().collection('berita').doc(blogId).update({
+                title: blogData.title,
+                image: url,
+                createdAt: new Date(),
+                description: blogData.content,
+            });
             setLoading(false);
-            navigation.navigate('Berita');
-        } catch (e) {
-            console.log(e);
+            console.log('Blog Updated!');
+            navigation.navigate('BeritaDetail', { blogId });
+        } catch (error) {
+            console.log(error);
         }
     };
+    // useEffect(() => {
+    //     getBlogById();
+    // }, [blogId]);
+
+    // const getBlogById = async () => {
+    //     try {
+    //         const response = await axios.get(
+    //             `https://6567ff2e9927836bd973fa98.mockapi.io/sitarika/Berita/${blogId}`,
+    //         );
+    //         setBlogData({
+    //             title: response.data.title,
+    //             content: response.data.description,
+    //         })
+    //         setImage(response.data.image)
+    //         setLoading(false);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // };
+    // const handleUpdate = async () => {
+    //     setLoading(true);
+    //     try {
+    //         await axios
+    //             .put(`https://6567ff2e9927836bd973fa98.mockapi.io/sitarika/Berita/${blogId}`, {
+    //                 title: blogData.title,
+    //                 image,
+    //                 createdAt: new Date(),
+    //                 description: blogData.content,
+    //             })
+    //             .then(function (response) {
+    //                 console.log(response);
+    //             })
+    //             .catch(function (error) {
+    //                 console.log(error);
+    //             });
+    //         setLoading(false);
+    //         navigation.navigate('Berita');
+    //     } catch (e) {
+    //         console.log(e);
+    //     }
+    // };
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -107,15 +179,58 @@ const EditBeritaForm = ({ route }) => {
                         style={textInput.content}
                     />
                 </View>
-                <View style={[textInput.borderDashed]}>
-                    <TextInput
-                        placeholder="Upload Gambar"
-                        value={image}
-                        onChangeText={(text) => setImage(text)}
-                        placeholderTextColor={colors.grey(0.6)}
-                        style={textInput.content}
-                    />
-                </View>
+                {image ? (
+                    <View style={{ position: 'relative' }}>
+                        <FastImage
+                            style={{ width: '100%', height: 127, borderRadius: 5 }}
+                            source={{
+                                uri: image,
+                                headers: { Authorization: 'someAuthToken' },
+                                priority: FastImage.priority.high,
+                            }}
+                            resizeMode={FastImage.resizeMode.cover}
+                        />
+                        <TouchableOpacity
+                            style={{
+                                position: 'absolute',
+                                top: -5,
+                                right: -5,
+                                backgroundColor: colors.blue(),
+                                borderRadius: 25,
+                            }}
+                            onPress={() => setImage(null)}>
+                            <Add
+                                size={20}
+                                variant="Linear"
+                                color={colors.white()}
+                                style={{ transform: [{ rotate: '45deg' }] }}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    <TouchableOpacity onPress={handleImagePick}>
+                        <View
+                            style={[
+                                textInput.borderDashed,
+                                {
+                                    gap: 10,
+                                    paddingVertical: 30,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                },
+                            ]}>
+                            <AddSquare color={colors.grey(0.6)} variant="Linear" size={42} />
+                            <Text
+                                style={{
+                                    fontFamily: fontType['Pjs-Regular'],
+                                    fontSize: 12,
+                                    color: colors.grey(0.6),
+                                }}>
+                                Upload Thumbnail
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                )}
 
             </ScrollView>
             <View style={styles.bottomBar}>

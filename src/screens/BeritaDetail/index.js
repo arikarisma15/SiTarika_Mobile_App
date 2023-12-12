@@ -8,6 +8,8 @@ import { formatDate } from '../../utils/formatDate';
 import ActionSheet from 'react-native-actions-sheet';
 import { colors, fontType } from '../../assets/theme';
 import axios from 'axios';
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 
 const BeritaDetail = ({ route }) => {
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -39,36 +41,76 @@ const BeritaDetail = ({ route }) => {
     actionSheetRef.current?.hide();
   };
 
-  useEffect(() => {
-    getBlogById();
-  }, [blogId]);
+  // useEffect(() => {
+  //   getBlogById();
+  // }, [blogId]);
 
-  const getBlogById = async () => {
-    try {
-      const response = await axios.get(
-        `https://6567ff2e9927836bd973fa98.mockapi.io/sitarika/Berita/${blogId}`,
-      );
-      setSelectedBlog(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const getBlogById = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `https://6567ff2e9927836bd973fa98.mockapi.io/sitarika/Berita/${blogId}`,
+  //     );
+  //     setSelectedBlog(response.data);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+  useEffect(() => {
+    const subscriber = firestore()
+      .collection('berita')
+      .doc(blogId)
+      .onSnapshot(documentSnapshot => {
+        const blogData = documentSnapshot.data();
+        if (blogData) {
+          console.log('Blog data: ', blogData);
+          setSelectedBlog(blogData);
+        } else {
+          console.log(`Blog with ID ${blogId} not found.`);
+        }
+      });
+    setLoading(false);
+    return () => subscriber();
+  }, [blogId]);
+  
 
   const navigateEdit = () => {
     closeActionSheet()
     navigation.navigate('EditBerita', { blogId })
   }
+  // const handleDelete = async () => {
+  //   await axios.delete(`https://6567ff2e9927836bd973fa98.mockapi.io/sitarika/Berita/${blogId}`)
+  //     .then(() => {
+  //       closeActionSheet()
+  //       navigation.navigate('Berita');
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  // }
   const handleDelete = async () => {
-    await axios.delete(`https://6567ff2e9927836bd973fa98.mockapi.io/sitarika/Berita/${blogId}`)
-      .then(() => {
-        closeActionSheet()
-        navigation.navigate('Berita');
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
+    setLoading(true);
+    try {
+      await firestore()
+        .collection('berita')
+        .doc(blogId)
+        .delete()
+        .then(() => {
+          console.log('Blog deleted!');
+        });
+      if (selectedBlog?.image) {
+        const imageRef = storage().refFromURL(selectedBlog?.image);
+        await imageRef.delete();
+      }
+      console.log('Blog deleted!');
+      closeActionSheet();
+      setSelectedBlog(null);
+      setLoading(false)
+      navigation.navigate('Berita');
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const toggleIcon = iconName => {
     setIconStates(prevStates => ({
       ...prevStates,
@@ -119,7 +161,7 @@ const BeritaDetail = ({ route }) => {
           <FastImage
             style={styles.image}
             source={{
-              uri: selectedBlog.image,
+              uri: selectedBlog?.image,
               headers: { Authorization: 'someAuthToken' },
               priority: FastImage.priority.high,
             }}
@@ -135,7 +177,7 @@ const BeritaDetail = ({ route }) => {
               style={styles.profileImage}
             />
             <View style={{ marginLeft: 10 }}>
-              <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 14 }}>{selectedBlog.uploadBy}</Text>
+              <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 14 }}>{selectedBlog?.uploadBy}</Text>
               <Text style={{ color: 'black', fontWeight: '300', fontSize: 12 }}>{formatDate(selectedBlog?.createdAt)}</Text>
             </View>
           </View>
@@ -147,8 +189,8 @@ const BeritaDetail = ({ route }) => {
             }}>
             <Text style={styles.category}>{selectedBlog.category}</Text>
           </View> */}
-          <Text style={styles.title}>{selectedBlog.title}</Text>
-          <Text style={styles.content}>{selectedBlog.description}</Text>
+          <Text style={styles.title}>{selectedBlog?.title}</Text>
+          <Text style={styles.content}>{selectedBlog?.description}</Text>
         </Animated.ScrollView>
       )}
       <ActionSheet
