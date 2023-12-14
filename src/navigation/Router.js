@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home, Discover, Bookmark, Profile, BlogDetail, BeritaDetail, Berita, AddBeritaForm, EditBeritaForm } from '../screens';
+import { Home, Discover, Bookmark, Profile, BlogDetail, BeritaDetail, Berita, AddBeritaForm, EditBeritaForm,Login, Register, SplashScreen } from '../screens';
 import { Home2, LocationDiscover, Receipt21, ProfileCircle } from 'iconsax-react-native';
 
 const Tab = createBottomTabNavigator();
@@ -74,7 +74,7 @@ function MainApp() {
 }
 const Router = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="SplashScreen">
       <Stack.Screen
         name="MainApp"
         component={MainApp}
@@ -115,6 +115,22 @@ const Router = () => {
           gestureDirection: 'horizontal',
           ...TransitionPresets.SlideFromRightIOS,
         }}
+      />
+
+<Stack.Screen
+        name="SplashScreen"
+        component={SplashScreen}
+        options={{headerShown: false}}
+      />
+<Stack.Screen
+        name="Register"
+        component={Register}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );
